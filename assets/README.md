@@ -1,0 +1,38 @@
+# assets/
+
+各サンプルが読み込む **USD シーンアセット** を置くフォルダです。
+
+## USD 本体は同梱していません
+
+このシリーズで使う USD（例: `crx20ia_l+Robotiq_2F_85_edit+rsd455.usd`）は、
+**NVIDIA Isaac Sim の標準アセットを組み合わせて自作したもの**です。
+元になっている 3D モデルは NVIDIA / 各提供元のライセンスに従うため、
+本リポジトリでは **再配布せず、この説明のみを置いています**。
+
+## 使い方
+
+各サンプルを動かすには、ここに USD を用意してください。
+
+1. **Isaac Sim の標準アセットから組み立てる**
+   - ロボット: FANUC **CRX-20iA/L**
+   - グリッパー: Robotiq **2F-85**
+   - カメラ: Intel RealSense **D455**（`rsd455`）
+   これらを 1 つのシーンに組み合わせ、下記のファイル名で保存します。
+
+2. **ファイル名を合わせる**
+   既定では次のパスを読み込みます（`01_simple_picking/simple_picking.py`）。
+
+   ```
+   assets/crx20ia_l+Robotiq_2F_85_edit+rsd455.usd
+   ```
+
+   別の名前・別のロボットを使う場合は、スクリプト上部の
+   `RobotConfig`（`robot_path` / `grip_frame_path` / `usd_path` など）を
+   実際の USD の構成に合わせて書き換えてください。
+
+## 注意
+
+- USD 内でロボットの Prim パス（例: `/World/crx20ia_l`）やグリッパーの
+  リンク名（例: `finger_joint`）が、コード側の設定と一致している必要があります。
+- 自作 USD に NVIDIA ホストのアセット参照（payload/reference）が含まれる場合、
+  実行時に Isaac のアセットサーバーへのアクセスが必要になります。

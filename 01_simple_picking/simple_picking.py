@@ -15,10 +15,10 @@
 #   5. SimplePickPlace      … フェーズ状態機械
 #   6. main                 … ステージ読み込みとメインループ
 #
-# ■ 実行方法（Windows PowerShell）
-#   C:\isaacsim\python.bat ".\simple_picking.py"
+# ■ 実行方法（Windows PowerShell）※リポジトリのルートから実行
+#   C:\isaacsim\python.bat ".\01_simple_picking\simple_picking.py"
 # ■ 実行方法（Linux）
-#   /home/dev/isaacsim/python.sh "./simple_picking.py"
+#   /home/dev/isaacsim/python.sh "./01_simple_picking/simple_picking.py"
 # ==============================================================================
 
 from __future__ import annotations
@@ -140,10 +140,9 @@ class Config:
 
 
 def build_default_config() -> Config:
-    """このスクリプトと同じ場所の assets/ から USD を探して設定を作る。"""
-    usd_path = (
-        Path(__file__).parent / "assets" / "crx20ia_l+Robotiq_2F_85_edit+rsd455.usd"
-    ).resolve()
+    """リポジトリ共有の assets/（1つ上の階層）から USD を探して設定を作る。"""
+    repo_root = Path(__file__).resolve().parent.parent
+    usd_path = repo_root / "assets" / "crx20ia_l+Robotiq_2F_85_edit+rsd455.usd"
     return Config(robot=RobotConfig(usd_path=usd_path))
 
 
@@ -509,7 +508,11 @@ def _wait_for_robot(robot_path: str, max_frames: int = 300) -> None:
 def main() -> None:
     cfg = build_default_config()
     if not cfg.robot.usd_path.exists():
-        raise FileNotFoundError(f"USD が見つかりません: {cfg.robot.usd_path}")
+        raise FileNotFoundError(
+            f"USD が見つかりません: {cfg.robot.usd_path}\n"
+            "USD 本体はリポジトリに同梱していません。"
+            "assets/README.md を参照して用意してください。"
+        )
 
     SimulationManager.setup_simulation(dt=1.0 / 60.0, device="cpu")
 

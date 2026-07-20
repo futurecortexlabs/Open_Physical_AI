@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# USD アセット本体（各自で assets/ に用意。assets/README.md 参照）
+assets/*.usd
+assets/*.usda
+assets/*.usdc
+assets/*.usdz
+
+# OS / エディタ
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# ツール類のローカル設定
+.claude/settings.local.json
