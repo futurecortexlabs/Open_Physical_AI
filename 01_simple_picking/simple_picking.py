@@ -171,13 +171,13 @@ class PhaseSpec:
 
 
 PHASE_SPECS: dict[Phase, PhaseSpec] = {
-    Phase.APPROACH_ABOVE: PhaseSpec("上空へ移動", False, 700),
-    Phase.DESCEND: PhaseSpec("下降して接近", False, 360),
-    Phase.GRASP: PhaseSpec("把持", True, 200),
-    Phase.LIFT: PhaseSpec("持ち上げ", True, 300),
-    Phase.TRANSPORT: PhaseSpec("置き先へ搬送", True, 500),
-    Phase.PLACE_DOWN: PhaseSpec("下降して設置", True, 360),  # 保持したまま下降
-    Phase.RELEASE: PhaseSpec("グリッパーを離す", False, 200),  # その場で開く
+    Phase.APPROACH_ABOVE: PhaseSpec("approach above", False, 700),
+    Phase.DESCEND: PhaseSpec("descend", False, 360),
+    Phase.GRASP: PhaseSpec("grasp", True, 200),
+    Phase.LIFT: PhaseSpec("lift", True, 300),
+    Phase.TRANSPORT: PhaseSpec("transport", True, 500),
+    Phase.PLACE_DOWN: PhaseSpec("place down", True, 360),  # 保持したまま下降
+    Phase.RELEASE: PhaseSpec("release", False, 200),  # その場で開く
 }
 
 
@@ -257,7 +257,7 @@ class JacobianIK:
         try:
             dq = task_jac.T @ np.linalg.solve(task_jac @ task_jac.T + damping, task_err)
         except np.linalg.LinAlgError:
-            log.warning("IK: 特異点により解が求まりませんでした")
+            log.warning("IK: no solution (near singularity)")
             return
 
         # いきなり大きく動かさないよう、全体を縮小し（step_scale）、
@@ -471,14 +471,14 @@ class SimplePickPlace:
         self.cycle += 1
         if not self.cfg.control.loop:
             self.done = True
-            log.info("ピッキング完了！（%d サイクル）", self.cycle)
+            log.info("pick-and-place done! (%d cycles)", self.cycle)
             return
 
         # ループ: 拾い先/置き先を入れ替えて先頭フェーズへ戻る
         # （^= 1 は 0↔1 を交互に切り替えるトグル）
         self._place_idx ^= 1
         self.phase = Phase.APPROACH_ABOVE
-        log.info("サイクル %d 完了 → 次サイクル開始", self.cycle)
+        log.info("cycle %d done -> starting next cycle", self.cycle)
 
     def _converged(self) -> bool:
         # 入った直後の1フレームだけの誤判定を防ぐため、最低フレーム数は待つ
@@ -509,16 +509,16 @@ def main() -> None:
     cfg = build_default_config()
     if not cfg.robot.usd_path.exists():
         raise FileNotFoundError(
-            f"USD が見つかりません: {cfg.robot.usd_path}\n"
-            "USD 本体はリポジトリに同梱していません。"
-            "assets/README.md を参照して用意してください。"
+            f"USD not found: {cfg.robot.usd_path}\n"
+            "The USD is not bundled in this repository. "
+            "See assets/README.md to prepare it."
         )
 
     SimulationManager.setup_simulation(dt=1.0 / 60.0, device="cpu")
 
     opened, stage = stage_utils.open_stage(str(cfg.robot.usd_path))
     if not opened or stage is None:
-        raise RuntimeError(f"USD を開けませんでした: {cfg.robot.usd_path}")
+        raise RuntimeError(f"Failed to open USD: {cfg.robot.usd_path}")
     stage.Load()
 
     _wait_for_robot(cfg.robot.robot_path)
