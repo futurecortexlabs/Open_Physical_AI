@@ -5,6 +5,12 @@ __pycache__/
 .venv/
 venv/
 
+# #04 の実行時出力（公開モデルは models/ に置く）
+04_rl_control/runs/
+
+# テストキャッシュ
+.pytest_cache/
+
 # USD アセット本体（各自で assets/ に用意。assets/README.md 参照）
 assets/*.usd
 assets/*.usda

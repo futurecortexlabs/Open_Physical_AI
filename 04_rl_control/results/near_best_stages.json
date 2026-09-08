@@ -1,0 +1,137 @@
+{
+  "kind": "PPO_STAGE_ATTAINMENT_REPORT",
+  "checkpoint_sha256": "c04a7b1d79f364c679af773c104562b4c9206d71e8c46aa2db4e1a5dd6d5de43",
+  "conditions": {
+    "task_version": "crx_whole_pick_place_v6",
+    "control": "cartesian",
+    "evaluation_task": "trained",
+    "stage": "full",
+    "curriculum": 0.0,
+    "requested_episodes": 64,
+    "verification_steps": 60,
+    "gravity_compensation": true,
+    "gripper_damping": 0.1,
+    "gripper_max_velocity": 0.5,
+    "solver_velocity_iterations": null,
+    "physics_hz": 60,
+    "success_bonus": 100.0,
+    "reward_scale": 1.0,
+    "completion_hold_steps": 70,
+    "completion_retry_mode": "fail"
+  },
+  "seeds": [
+    909,
+    910,
+    911,
+    912
+  ],
+  "episodes": 256,
+  "stages": [
+    {
+      "key": "reached",
+      "label": "接近",
+      "definition": "手先と物体の距離が5 cm未満",
+      "attained": 256,
+      "denominator": 256,
+      "rate": 1.0
+    },
+    {
+      "key": "grasp_proxy",
+      "label": "把持（代理判定）",
+      "definition": "距離6 cm未満かつ指関節角0.1 rad超。接触力の確認ではない",
+      "attained": 256,
+      "denominator": 256,
+      "rate": 1.0
+    },
+    {
+      "key": "lifted",
+      "label": "持ち上げ",
+      "definition": "物体高さ10 cm超、手先距離9 cm未満、指関節角0.1 rad超の履歴",
+      "attained": 256,
+      "denominator": 256,
+      "rate": 1.0
+    },
+    {
+      "key": "at_goal_after_lift",
+      "label": "搬送・目標到達",
+      "definition": "持ち上げ履歴があり、物体の目標位置誤差3.5 cm未満",
+      "attained": 254,
+      "denominator": 256,
+      "rate": 0.9921875
+    },
+    {
+      "key": "quiet_at_goal",
+      "label": "配置位置で静止",
+      "definition": "持ち上げ後に目標位置で並進速度5 cm/s未満、角速度0.5 rad/s未満。接地・接触力の確認ではない",
+      "attained": 252,
+      "denominator": 256,
+      "rate": 0.984375
+    },
+    {
+      "key": "opened_at_goal",
+      "label": "開放",
+      "definition": "持ち上げ後に目標位置で指関節角0.12 rad未満",
+      "attained": 252,
+      "denominator": 256,
+      "rate": 0.984375
+    },
+    {
+      "key": "retreated_at_goal",
+      "label": "退避",
+      "definition": "目標位置で開放し、手先と物体の距離9 cm超",
+      "attained": 250,
+      "denominator": 256,
+      "rate": 0.9765625
+    },
+    {
+      "key": "completed",
+      "label": "全工程・初回成功",
+      "definition": "持ち上げ履歴・目標位置・静止・開放・退避が10ステップ連続成立",
+      "attained": 250,
+      "denominator": 256,
+      "rate": 0.9765625
+    },
+    {
+      "key": "verified",
+      "label": "完了後2秒の維持",
+      "definition": "初回成功後も同じPPOで60ステップ以上、連続して成功条件を維持",
+      "attained": 250,
+      "denominator": 256,
+      "rate": 0.9765625
+    }
+  ],
+  "verified_successes": 250,
+  "verified_rate": 0.9765625,
+  "per_seed": [
+    {
+      "seed": 909,
+      "episodes": 64,
+      "verified_successes": 63,
+      "rate": 0.984375
+    },
+    {
+      "seed": 910,
+      "episodes": 64,
+      "verified_successes": 63,
+      "rate": 0.984375
+    },
+    {
+      "seed": 911,
+      "episodes": 64,
+      "verified_successes": 63,
+      "rate": 0.984375
+    },
+    {
+      "seed": 912,
+      "episodes": 64,
+      "verified_successes": 61,
+      "rate": 0.953125
+    }
+  ],
+  "target_rate": 0.9,
+  "target_met_in_this_evaluation": true,
+  "target_requires_each_seed": true,
+  "population_success_rate_guaranteed": false,
+  "stage_rates_use_all_episodes_not_conditional_denominators": true,
+  "milestones_are_independent_attainment_not_a_scripted_sequence": true
+}
